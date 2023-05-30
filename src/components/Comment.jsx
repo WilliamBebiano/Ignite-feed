@@ -1,8 +1,9 @@
 import { ThumbsUp, Trash } from '@phosphor-icons/react'
 import styles from './Comment.module.css'
+import PropTypes from 'prop-types';
 import { Avatar } from './Avatar'
 
-export function Comment() {
+export function Comment({content}) {
   return (
     <div className={styles.comment}>
       <Avatar hasBorder={false} src="https://github.com/WilliamBebiano.png" alt='' />
@@ -21,7 +22,7 @@ export function Comment() {
 
           </header>
 
-          <p>Muito bom William, parabéns!! 👏👏</p>
+          <p>{content}</p>
 
         </div>
         <footer>
@@ -33,4 +34,10 @@ export function Comment() {
       </div>
     </div>
   )
+}
+
+
+Comment.propTypes = {
+  content: PropTypes.object,
+  
 }
