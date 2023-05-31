@@ -1,6 +1,7 @@
 import { format, formatDistanceToNow } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import PropTypes from 'prop-types';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Avatar } from './Avatar'
 import { Comment } from './Comment'
@@ -42,9 +43,23 @@ export function Post({ author, publishedAt, content }) {
  
    //funcao que segura todas as mudancas dentro da text area
    function handleNewCommentChange() {
-
+    event.target.setCustomValidity('')
     setNewCommentText(event.target.value)
    }
+
+   function handleNewCommentInvalid() {
+    event.target.setCustomValidity('Este campo é obrigatorio')
+   }
+
+   // Desenvolvendo a funcao deletar que enviara uma propriedade para o Botao delete do componete Comments
+   // conceitos de imutabilidade , as variaveis nao sofrem mutacao, nos criamos um valor (um novo espacona memoria)
+   function deleteComment(commentToDelete) {
+    const commentWithoutDeletedOne = comments.filter(comment => {
+      return comment !== commentToDelete
+    })
+    setComments(commentWithoutDeletedOne)
+   }
+   const isNewCommentEmpty = newCommentText.length === 0
 
   return (
     <article className={styles.post}>
@@ -62,12 +77,12 @@ export function Post({ author, publishedAt, content }) {
       </header>
 
       <div className={styles.content}>
-      {content.map((line, index) => {
+      {content.map( line => {
           if (line.type === 'paragraph') {
-            return <p key={index}>{line.content}</p>;
+            return <p key={uuidv4()}>{line.content}</p>;
           } else if (line.type === 'link') {
             return (
-              <p key={index}>
+              <p key={uuidv4()}>
                 <a href='#'>{line.content}</a>
               </p>
             );
@@ -84,15 +99,18 @@ export function Post({ author, publishedAt, content }) {
           placeholder='Deixe um comentario'
           value={newCommentText}
           onChange={handleNewCommentChange}
+          onInvalid={handleNewCommentInvalid}
+          required
         />
 
         <footer>
-          <button type='submit'>Publicar</button>
+          <button type='submit' disabled={isNewCommentEmpty}>Publicar</button>
         </footer>
       </form>
       <div className={styles.commentList}>
        {comments.map(comment => {
-        return <Comment key={comment.id} content={comment}/>
+        return <Comment key={comment} content={comment} onDeleteComment={deleteComment}/>//envio a funcao como propriedade para o component Comment
+
        })}
       </div>
     </article>
